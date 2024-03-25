@@ -24,13 +24,19 @@ def calcular_soma_diferenca_horarios(resultados_busca):
 def calcular_total_trabalhado(resultados_busca):
     total_por_dia = defaultdict(timedelta)
     total_trabalhado = timedelta()
+    registros_pontos = []
 
     for item in resultados_busca:
         dia_registro = item['dia_registro']
         horario_registro = item['horario_registro']
-        total_por_dia[dia_registro] += timedelta(hours=int(horario_registro.split(':')[0]), minutes=int(horario_registro.split(':')[1]))
+        
+        # Convertendo horário de string para objeto datetime
+        horario_dt = datetime.strptime(horario_registro, '%H:%M')
+        
+        total_por_dia[dia_registro] += timedelta(hours=horario_dt.hour, minutes=horario_dt.minute)
+        registros_pontos.append({'dia_registro': dia_registro, 'horario_registro': horario_registro})
     
     for total_dia in total_por_dia.values():
         total_trabalhado += total_dia
 
-    return {'total_por_dia': dict(total_por_dia), 'total_trabalhado': total_trabalhado}
+    return {'total_por_dia': dict(total_por_dia), 'total_trabalhado': total_trabalhado, 'registros_pontos': registros_pontos}
